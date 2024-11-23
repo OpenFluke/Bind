@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blueprint WASM Test</title>
+    <script src="wasm_exec.js"></script>
+  </head>
+  <body>
+    <h1>Blueprint WASM Test</h1>
+
+    <!-- Buttons to run different methods -->
+    <button onclick="getBlueprintMethods()">Get Blueprint Methods</button>
+    <button onclick="runBenchmark()">Run Benchmark</button>
+
+    <!-- Output area -->
+    <pre id="output"></pre>
+
+    <script>
+      const go = new Go();
+      let blueprintInstance;
+
+      // Load and initialize the WebAssembly module
+      async function loadWasm() {
+        const result = await WebAssembly.instantiateStreaming(
+          fetch("blueprint.wasm"),
+          go.importObject
+        );
+        go.run(result.instance);
+        blueprintInstance = result.instance.exports;
+      }
+
+      // Function to get and display blueprint methods
+      async function getBlueprintMethods() {
+        try {
+          const methodsJSON = await GetBlueprintMethodsJSON();
+          document.getElementById("output").textContent = methodsJSON;
+        } catch (err) {
+          document.getElementById("output").textContent = `Error: ${err}`;
+        }
+      }
+
+      // Function to run the RunBenchmark method with a 5-second duration
+      async function runBenchmark() {
+        try {
+          const durationSeconds = 5;
+          const params = JSON.stringify([durationSeconds * 1000000000]); // Convert seconds to nanoseconds for Go's duration
+
+          const result = await RunBenchmark(params);
+          document.getElementById(
+            "output"
+          ).textContent = `Benchmark Results:\n${result}`;
+        } catch (err) {
+          document.getElementById("output").textContent = `Error: ${err}`;
+        }
+      }
+
+      // Helper function to call WASM functions
+      function callWasmFunction(name, params) {
+        return new Promise((resolve, reject) => {
+          try {
+            const result = window[name](params);
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+
+      // Wrapper function to call GetBlueprintMethodsJSON
+      async function GetBlueprintMethodsJSON() {
+        return callWasmFunction("GetBlueprintMethodsJSON", "[]");
+      }
+
+      // Wrapper function to call RunBenchmark
+      async function RunBenchmark(duration) {
+        return callWasmFunction("RunBenchmark", duration);
+      }
+
+      // Load the WASM module on page load
+      loadWasm().catch(console.error);
+    </script>
+  </body>
+</html>
