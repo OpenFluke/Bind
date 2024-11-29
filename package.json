@@ -1,0 +1,31 @@
+{
+  "name": "@openneuralforge/bind",
+  "version": "1.1.0",
+  "description": "An advanced AI neural network framework implemented in WebAssembly using Golang.",
+  "main": "dist/main.js",
+  "files": ["dist"],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "GOOS=js GOARCH=wasm go build -o dist/main.wasm main.go && cp wasm_exec.js dist/",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openneuralforge/Bind.git"
+  },
+  "keywords": [
+    "wasm",
+    "golang",
+    "open",
+    "neural",
+    "forge",
+    "ai",
+    "framework"
+  ],
+  "author": "Samuel Watson",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/openneuralforge/Bind/issues"
+  },
+  "homepage": "https://github.com/openneuralforge/Bind#readme"
+}
