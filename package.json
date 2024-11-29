@@ -1,9 +1,11 @@
 {
   "name": "@openneuralforge/bind",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "An advanced AI neural network framework implemented in WebAssembly using Golang.",
   "main": "dist/main.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "GOOS=js GOARCH=wasm go build -o dist/main.wasm main.go && cp wasm_exec.js dist/",
