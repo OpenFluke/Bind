@@ -14,6 +14,99 @@
 - **Self-Updating Environment**: Automatically includes new or modified methods from the `Blueprint` framework in each build.
 - **Test, Benchmark, and Showcase**: Easily demonstrate `Blueprint`'s capabilities with real-time, browser-accessible results.
 
+## Getting Started
+
+### Option 1: Using npm (Node.js)
+
+1. **Install the Package**:
+   ```bash
+   npm install @openneuralforge/bind@latest
+   ```
+
+2. **Create a Node.js Script**:
+   Create a new file (e.g., `index.js`) with the following content:
+   ```javascript
+   import fs from 'fs';
+   import path from 'path';
+   import { fileURLToPath } from 'url';
+   import vm from 'vm';
+
+   // Resolve file paths
+   const __filename = fileURLToPath(import.meta.url);
+   const __dirname = path.dirname(__filename);
+   const wasmExecPath = path.join(__dirname, 'node_modules/@openneuralforge/bind/dist/wasm_exec.js');
+   const wasmPath = path.join(__dirname, 'node_modules/@openneuralforge/bind/dist/main.wasm');
+
+   // Load the wasm_exec.js file into the global context
+   const wasmExecCode = fs.readFileSync(wasmExecPath, 'utf8');
+   vm.runInThisContext(wasmExecCode);
+   const go = new Go(); // The Go constructor is now available globally
+
+   // Function to load and initialize the WebAssembly module
+   async function loadWasm() {
+     const wasmBuffer = fs.readFileSync(wasmPath);
+     const wasmModule = await WebAssembly.instantiate(wasmBuffer, go.importObject);
+     go.run(wasmModule.instance);
+     return wasmModule.instance;
+   }
+
+   // Main async function to initialize and test WASM
+   (async () => {
+     try {
+       console.log("Loading WASM...");
+       const wasmInstance = await loadWasm();
+       console.log("WASM loaded successfully!");
+
+       // Example of calling a WASM function
+       if (typeof globalThis.GetBlueprintMethodsJSON === "function") {
+         const methods = globalThis.GetBlueprintMethodsJSON();
+         console.log("Available methods:", methods);
+       } else {
+         console.log("GetBlueprintMethodsJSON function is not defined in WASM.");
+       }
+     } catch (error) {
+       console.error("Error loading WASM:", error);
+     }
+   })();
+   ```
+
+### Option 2: Building from Source
+
+1. **Clone the Repositories**:
+   Clone the LayerForge AI framework into the parent folder:
+   ```bash
+   git clone https://github.com/openneuralforge/Anvil.git
+   ```
+
+   Then, clone the bind repository inside the same parent directory:
+   ```bash
+   git clone https://github.com/openneuralforge/bind.git
+   ```
+
+2. **Build the WASM File**:
+   Navigate to the `bind` directory, then run the following command to compile `LayerForge` into WebAssembly:
+   ```bash
+   GOOS=js GOARCH=wasm go build -o blueprint.wasm main.go
+   ```
+
+3. **Prepare the WASM Execution Environment**:
+   Ensure `wasm_exec.js` (found in your Go installation, typically under `GOROOT/misc/wasm/wasm_exec.js`) is in the same directory as your `index.html` file.
+
+4. **Start a Local HTTP Server**:
+   To serve the files locally, start an HTTP server from within the `bind` directory:
+   ```bash
+   python3 -m http.server 8000
+   ```
+
+5. **Access the Interface**:
+   Open your browser and navigate to:
+   ```
+   http://localhost:8000
+   ```
+   You should see the interface where you can:
+   - Run introspection on the LayerForge framework to view available methods
+   - Execute benchmarks and other LayerForge methods directly in your browser
+
 ## Technical Architecture
 
 Bind employs advanced techniques to ensure robust and flexible interoperability between Go and JavaScript. The core functionalities are centered around reflection-based method wrapping, JavaScript interoperability, and WebAssembly integration.
@@ -62,45 +155,3 @@ By compiling Go code into WebAssembly, Bind ensures high-performance execution o
 - **Scalability**: The reflection-based approach allows Bind to automatically adapt to changes in the `Blueprint` package, reducing the maintenance overhead as the AI framework evolves.
 - **Performance**: By leveraging WASM and efficient serialization mechanisms, Bind ensures that method invocations are executed with minimal overhead, maintaining high performance within web environments.
 - **Extensibility**: The architecture supports future enhancements, such as integrating WebGPU, enabling more complex and distributed AI computations directly in the browser.
-
-## Getting Started
-
-1. **Clone the Repositories**:
-
-   Clone the LayerForge AI framework into the parent folder:
-   
-   `git clone https://github.com/openneuralforge/Anvil.git`
-
-   Then, clone the bind repository inside the same parent directory:
-
-   `git clone https://github.com/openneuralforge/bind.git`
-
-2. **Build the WASM File**:
-
-   Navigate to the `bind` directory, then run the following command to compile `LayerForge` into WebAssembly:
-
-   `GOOS=js GOARCH=wasm go build -o blueprint.wasm main.go`
-
-   This command generates the `blueprint.wasm` file, which can then be run in the browser.
-
-3. **Prepare the WASM Execution Environment**:
-
-   Ensure `wasm_exec.js` (found in your Go installation, typically under `GOROOT/misc/wasm/wasm_exec.js`) is in the same directory as your `index.html` file.
-
-4. **Start a Local HTTP Server**:
-
-   To serve the files locally, start an HTTP server from within the `bind` directory.
-
-   Using Python, for example:
-
-   `python3 -m http.server 8000`
-
-5. **Access the Interface**:
-
-   Open your browser and navigate to:
-
-   `http://localhost:8000`
-
-   You should see the interface where you can:
-   - Run introspection on the LayerForge framework to view available methods.
-   - Execute benchmarks and other LayerForge methods directly in your browser.
