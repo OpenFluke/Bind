@@ -5,7 +5,7 @@
 
 ## Overview
 
-**Bind** is a pivotal component of the [Neural Forge](https://github.com/openneuralforge) ecosystem, engineered to seamlessly integrate the `Blueprint` Go package with JavaScript environments through WebAssembly (WASM). By leveraging reflection-based method wrapping, Bind dynamically exposes Go methods to the web, enabling efficient execution of AI framework functionalities directly within browser environments. This facilitates interactive testing, benchmarking, and paves the way for future enhancements utilizing technologies like WebGPU for distributed evaluation.
+**Bind** is a pivotal component of the [Neural Forge](https://github.com/openfluke) ecosystem, engineered to seamlessly integrate the `Blueprint` Go package with JavaScript environments through WebAssembly (WASM). By leveraging reflection-based method wrapping, Bind dynamically exposes Go methods to the web, enabling efficient execution of AI framework functionalities directly within browser environments. This facilitates interactive testing, benchmarking, and paves the way for future enhancements utilizing technologies like WebGPU for distributed evaluation.
 
 ## Features
 
@@ -75,12 +75,12 @@
 1. **Clone the Repositories**:
    Clone the LayerForge AI framework into the parent folder:
    ```bash
-   git clone https://github.com/openneuralforge/Anvil.git
+   git clone https://github.com/openfluke/Anvil.git
    ```
 
    Then, clone the bind repository inside the same parent directory:
    ```bash
-   git clone https://github.com/openneuralforge/bind.git
+   git clone https://github.com/openfluke/bind.git
    ```
 
 2. **Build the WASM File**:

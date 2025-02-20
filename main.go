@@ -7,11 +7,11 @@ import (
 	"syscall/js"
 	"time"
 
-	"blueprint" // Adjust the import path if necessary
+	"phase" // Adjust the import path if necessary
 )
 
 // methodWrapper dynamically wraps each method of Blueprint to expose it to JavaScript
-func methodWrapper(bp *blueprint.Blueprint, methodName string) js.Func {
+func methodWrapper(bp *phase.Phase, methodName string) js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		method := reflect.ValueOf(bp).MethodByName(methodName)
 		if !method.IsValid() {
@@ -69,10 +69,10 @@ func methodWrapper(bp *blueprint.Blueprint, methodName string) js.Func {
 
 func main() {
 	// Create an instance of Blueprint
-	bp := &blueprint.Blueprint{}
+	bp := phase.NewPhase()
 
 	// Retrieve all methods using reflection from introspection
-	methods, err := bp.GetBlueprintMethods()
+	methods, err := bp.GetphaseMethods()
 	if err != nil {
 		fmt.Println("Error getting methods:", err)
 		return
